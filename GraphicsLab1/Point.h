@@ -23,4 +23,17 @@ public:
    {
       loc = vec;
    }
+   
+   void DrawCasing(double size)
+   {
+      glBegin(GL_LINE_LOOP);
+
+      glVertex2i(loc.x + size, loc.y + size);
+      glVertex2i(loc.x - size, loc.y + size);
+      glVertex2i(loc.x - size, loc.y - size);
+      glVertex2i(loc.x + size, loc.y - size);
+
+      glEnd();
+   }
+
 };

@@ -18,11 +18,6 @@ public:
 
    }
 
-   void Append(Point p)
-   {
-      points.push_back(p);
-   }
-
    void Draw()
    {
       glColor3ub(R, G, B);
@@ -33,5 +28,20 @@ public:
          glVertex2i(points[i].loc.x, points[i].loc.y);
 
       glEnd();
+   }
+
+   void DrawCasing()
+   {
+      glColor3ub(R, G, B);
+      glPointSize(size);
+
+      for(size_t i = 0; i < points.size(); i++)
+         points[i].DrawCasing(size * 1.2);
+   }
+
+   void Move(const double& x, const double& y)
+   {
+      for(size_t i = 0; i < points.size(); i++)
+         points[i].loc += Vec2(x, y);
    }
 };

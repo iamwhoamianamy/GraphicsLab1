@@ -1,4 +1,5 @@
 ﻿#include <iostream>
+#include <string>
 #include "glut.h"
 #include "Group.h"
 #include "Point.h"
@@ -6,10 +7,27 @@
 
 using namespace std;
 
-int WIDTH = 400, HEIGHT = 400;
-//GLubyte ColorR = 0, ColorG = 0, ColorB = 0;
+int WIDTH = 800, HEIGHT = 800;
+int active = -1;
 GLubyte PointSize = 50;
-vector<Group> groups(1);
+vector<Group> groups;
+
+// Функция для отрисовки информации
+void DrawString(int x, int y, GLubyte col, string s)
+{
+   glColor3f(col, col, col);
+
+   glPushMatrix();
+   glTranslatef(x, y, 0);
+
+   double fac = 0.15;
+   glScalef(fac, fac, fac);
+
+   for(size_t i = 0; i < s.size(); i++)
+      glutStrokeCharacter(GLUT_STROKE_ROMAN, s[i]);
+
+   glPopMatrix();
+}
 
 // Функция вывода на экран 
 void Display(void)
@@ -22,9 +40,16 @@ void Display(void)
       groups[i].Draw();
    }
 
-   glFinish();
+   if(active >= 0)
+      groups[active].DrawCasing();
 
-  
+   string s = "Total groups: " + to_string(groups.size());
+   DrawString(10, 30, 200, s);
+
+   s = active >=0 ? "Current group: " + to_string(active + 1) : "Current group: none";
+   DrawString(10, 10, 200, s);
+
+   glFinish();
 }
 
 // Функция изменения размеров окна
@@ -39,22 +64,65 @@ void Reshape(GLint w, GLint h)
    glLoadIdentity();
 }
 
+// Функция обработки сообщений от клавиатуры 1
+void KeyboardLetters(unsigned char key, int x, int y)
+{
+   double speed = 5;
+
+   switch(key)
+   {
+      // Передвижение точек по осям
+   case 'w': groups[active].Move(speed * +0, speed * +1); break;
+   case 'a': groups[active].Move(speed * -1, speed * +0); break;
+   case 's': groups[active].Move(speed * +0, speed * -1); break;
+   case 'd': groups[active].Move(speed * +1, speed * +0); break;
+   }
+
+   glutPostRedisplay();
+}
+
+// Функция обработки сообщений от клавиатуры 2
+void KeyboardSpecials(int key, int x, int y)
+{
+   double speed = 5;
+
+   switch(key)
+   {
+      // Переключение между активными группами
+   case GLUT_KEY_LEFT: active = (active + 1) % groups.size(); break;
+   case GLUT_KEY_RIGHT: active = (active - 1 + groups.size()) % groups.size(); break;
+
+      // Добавление и удаление групп
+   case GLUT_KEY_UP: groups.push_back(Group()); active = groups.size() - 1; break;
+   case GLUT_KEY_DOWN: if(groups.size()) groups.erase(groups.begin() + active); active = groups.size() - 1; break;
+   }
+
+   glutPostRedisplay();
+}
+
 // Функция обработки сообщения от мыши
 void Mouse(int button, int state, int x, int y)
 {
-   /* клавиша была нажата, но не отпущена */
+   // Клавиша была нажата, но не отпущена
    if(state != GLUT_DOWN) return;
 
-   /* новая точка по левому клику */
+   // Новая точка по левому клику
    if(button == GLUT_LEFT_BUTTON)
    {
-      groups[0].points.push_back(Point(x, HEIGHT - y));
+      if(!groups.size())
+      {
+         groups.push_back(Group());
+         active = 0;
+      }
+
+      groups[active].points.push_back(Point(x, HEIGHT - y));
    }
-   /* удаление последней точки по центральному клику */
+   
+   // Удаление последней точки по центральному клику
    if(button == GLUT_MIDDLE_BUTTON)
    {
-      if(groups[0].points.size())
-         groups[0].points.pop_back();
+      if(groups[active].points.size())
+         groups[active].points.pop_back();
    }
 
    glutPostRedisplay();
@@ -62,9 +130,7 @@ void Mouse(int button, int state, int x, int y)
 
 int main(int argc, char** argv)
 {
-
-   groups[0].Append(Point(100, 200));
-   groups[0].Append(Point(200, 100));
+   //groups[0].Append(Point(WIDTH / 2, HEIGHT / 2));
 
 
    glutInit(&argc, argv);
@@ -74,8 +140,10 @@ int main(int argc, char** argv)
 
    glutDisplayFunc(Display);
    glutReshapeFunc(Reshape);
+   glutKeyboardFunc(KeyboardLetters);
+   glutSpecialFunc(KeyboardSpecials);
    glutMouseFunc(Mouse);
 
-   glutMainLoop();
 
+   glutMainLoop();
 }
