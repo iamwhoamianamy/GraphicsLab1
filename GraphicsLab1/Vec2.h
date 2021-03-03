@@ -49,6 +49,13 @@ public:
       return *this;
    }
 
+   Vec2& operator /=(const double& rhs)
+   {
+      x /= rhs;
+      y /= rhs;
+      return *this;
+   }
+
    Vec2& operator -=(const Vec2& rhs)
    {
       x -= rhs.x;
@@ -59,6 +66,12 @@ public:
    friend Vec2 operator *(Vec2 lhs, const double& rhs)
    {
       lhs *= rhs;
+      return lhs;
+   }
+
+   friend Vec2 operator /(Vec2 lhs, const double& rhs)
+   {
+      lhs /= rhs;
       return lhs;
    }
 };

@@ -40,8 +40,11 @@ void Display(void)
       groups[i].Draw();
    }
 
-   if(active >= 0)
+   if(active != -1)
       groups[active].DrawCasing();
+
+   if(active != -1 && groups[active].points.size())
+      groups[active].DrawCenter();
 
    string s = "Total groups: " + to_string(groups.size());
    DrawString(10, 30, 200, s);
@@ -68,14 +71,24 @@ void Reshape(GLint w, GLint h)
 void KeyboardLetters(unsigned char key, int x, int y)
 {
    double speed = 5;
-
-   switch(key)
+   if(active != -1)
    {
-      // Передвижение точек по осям
-   case 'w': groups[active].Move(speed * +0, speed * +1); break;
-   case 'a': groups[active].Move(speed * -1, speed * +0); break;
-   case 's': groups[active].Move(speed * +0, speed * -1); break;
-   case 'd': groups[active].Move(speed * +1, speed * +0); break;
+      switch(key)
+      {
+         // Передвижение точек по осям
+      case 'w': groups[active].Move(speed * +0, speed * +1); break;
+      case 'a': groups[active].Move(speed * -1, speed * +0); break;
+      case 's': groups[active].Move(speed * +0, speed * -1); break;
+      case 'd': groups[active].Move(speed * +1, speed * +0); break;
+
+         // Вращение точек
+      case 'q': groups[active].Rotate(0.01, groups[active].center.loc); break;
+      case 'e': groups[active].Rotate(-0.01, groups[active].center.loc); break;
+
+         // Масштабирование точек
+      case 'z': groups[active].Scale(1.05, groups[active].center.loc); break;
+      case 'x': groups[active].Scale(1 / 1.05, groups[active].center.loc); break;
+      }
    }
 
    glutPostRedisplay();
@@ -115,14 +128,13 @@ void Mouse(int button, int state, int x, int y)
          active = 0;
       }
 
-      groups[active].points.push_back(Point(x, HEIGHT - y));
+      groups[active].AddPoint(Point(x, HEIGHT - y));
    }
    
    // Удаление последней точки по центральному клику
    if(button == GLUT_MIDDLE_BUTTON)
    {
-      if(groups[active].points.size())
-         groups[active].points.pop_back();
+      groups[active].DeletePoint();
    }
 
    glutPostRedisplay();
