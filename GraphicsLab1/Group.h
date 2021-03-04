@@ -11,14 +11,19 @@ class Group
 public:
    vector<Point> points;
    Point center;
-   GLubyte R = 200, G = 200, B = 200;
+   GLubyte R = 255, G = 255, B = 255;
    GLfloat size = 10;
+   int active_point = -1;
+   bool is_center_active = false;
+
+   int mode = 0;
 
    Group()
    {
 
    }
 
+   // Вычисление геометрического центра группы
    void CalcCenter()
    {
       center = Point(0, 0);
@@ -29,26 +34,47 @@ public:
       center.loc /= points.size();
    }
 
+   void ChoseNextActivePoint()
+   {
+      if(!is_center_active)
+         active_point = (active_point + 1) % points.size();
+   }
+
+   void ChosePrevActivePoint()
+   {
+      if(!is_center_active)
+         active_point = (active_point - 1 + points.size()) % points.size();
+   }
+
+   // Добавление точки в группу
    void AddPoint(Point point)
    {
       points.push_back(point);
+      active_point = points.size() - 1;
       CalcCenter();
    }
 
+   // Удаление точки из группы
    void DeletePoint()
    {
       if(points.size())
       {
-         points.pop_back();
+         points.erase(points.begin() + active_point);
          CalcCenter();
       }
+
+      if(points.size())
+         active_point = points.size() - 1;
+      else
+         active_point = -1;
    }
 
+   // Отрисовка точек в соответствии с выбранным алгоритмом
    void Draw()
    {
       glColor3ub(R, G, B);
       glPointSize(size);
-      glBegin(GL_POINTS);
+      glBegin(GLenum(mode));
 
       for(size_t i = 0; i < points.size(); i++)
          glVertex2i(points[i].loc.x, points[i].loc.y);
@@ -73,17 +99,28 @@ public:
 
    void DrawCasing()
    {
-      glColor3ub(R, G, B);
+      glColor3ub(255, 255, 255);
       glPointSize(size);
 
       for(size_t i = 0; i < points.size(); i++)
          points[i].DrawCasing(size * 1.2);
+
+      if(points.size())
+      {
+         if(is_center_active)
+            center.DrawCasing(size * 1.5);
+         else
+            points[active_point].DrawCasing(size * 1.5);
+      }
    }
 
    void Move(const double& x, const double& y)
    {
-      for(size_t i = 0; i < points.size(); i++)
-         points[i].loc += Vec2(x, y);
+      if(is_center_active)
+         for(size_t i = 0; i < points.size(); i++)
+            points[i].Move(Vec2(x, y));
+      else
+         points[active_point].Move(Vec2(x, y));
 
       CalcCenter();
    }
@@ -96,15 +133,14 @@ public:
 
    void Rotate(const double& angle, Vec2 around)
    {
-      Translate(around * -1);
 
-      for(size_t i = 0; i < points.size(); i++)
+      if(is_center_active)
       {
-         points[i].loc.x = points[i].loc.x * cos(angle) - points[i].loc.y * sin(angle);
-         points[i].loc.y = points[i].loc.x * sin(angle) + points[i].loc.y * cos(angle);
+         for(size_t i = 0; i < points.size(); i++)
+            points[i].Rotate(angle, around);
       }
-
-      Translate(around);
+      else
+         points[active_point].Rotate(angle, around);
    }
 
    void Scale(const double& factor, Vec2 from)
