@@ -51,4 +51,13 @@ public:
 
       Move(around);
    }
+
+   void Scale(const double& factor, Vec2 from)
+   {
+      Move(from * -1);
+
+      loc *= factor;
+
+      Move(from);
+   }
 };

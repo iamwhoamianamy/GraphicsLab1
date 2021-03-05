@@ -43,7 +43,8 @@ public:
    void ChosePrevActivePoint()
    {
       if(!is_center_active)
-         active_point = (active_point - 1 + points.size()) % points.size();
+         if(points.size())
+            active_point = (active_point - 1 + points.size()) % points.size();
    }
 
    // Добавление точки в группу
@@ -63,10 +64,12 @@ public:
          CalcCenter();
       }
 
-      if(points.size())
+      ChosePrevActivePoint();
+
+      /*if(points.size())
          active_point = points.size() - 1;
       else
-         active_point = -1;
+         active_point = -1;*/
    }
 
    // Отрисовка точек в соответствии с выбранным алгоритмом
@@ -119,37 +122,34 @@ public:
       if(is_center_active)
          for(size_t i = 0; i < points.size(); i++)
             points[i].Move(Vec2(x, y));
-      else
+      else if(points.size())
          points[active_point].Move(Vec2(x, y));
 
       CalcCenter();
    }
 
-   void Translate(Vec2 around)
+   /*void Translate(Vec2 around)
    {
       for(size_t i = 0; i < points.size(); i++)
          points[i].loc += Vec2(around.x, around.y);
-   }
+   }*/
 
    void Rotate(const double& angle, Vec2 around)
    {
 
       if(is_center_active)
-      {
          for(size_t i = 0; i < points.size(); i++)
             points[i].Rotate(angle, around);
-      }
-      else
+      else if(points.size())
          points[active_point].Rotate(angle, around);
    }
 
    void Scale(const double& factor, Vec2 from)
    {
-      Translate(from * -1);
-
-      for(size_t i = 0; i < points.size(); i++)
-         points[i].loc *= factor;
-
-      Translate(from);
+      if(is_center_active)
+         for(size_t i = 0; i < points.size(); i++)
+            points[i].Scale(factor, from);
+      else if(points.size())
+         points[active_point].Scale(factor, from);
    }
 };

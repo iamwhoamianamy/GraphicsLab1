@@ -12,7 +12,7 @@ int active_group = -1;
 GLubyte PointSize = 50;
 vector<Group> groups;
 
-// Функция для отрисовки информации
+// Функция для отрисовки строки
 void DrawString(int x, int y, GLubyte col, string s)
 {
    glColor3f(col, col, col);
@@ -137,10 +137,9 @@ void KeyboardLetters(unsigned char key, int x, int y)
          // Выбор центральной точки группы
       case 'f':
          if(groups.size())
-         {
             if(groups[active_group].points.size() > 1)
                groups[active_group].is_center_active = !groups[active_group].is_center_active;
-         }
+         break;
 
          // Выбор режима отрисовки
       case 't':
@@ -207,7 +206,8 @@ void Mouse(int button, int state, int x, int y)
    // Удаление последней точки по правому клику
    if(button == GLUT_RIGHT_BUTTON)
    {
-      groups[active_group].DeletePoint();
+      if(groups.size())
+          groups[active_group].DeletePoint();
    }
 
    glutPostRedisplay();
