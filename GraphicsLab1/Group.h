@@ -16,7 +16,6 @@ public:
    bool is_center_active = false;
 
    int mode = 0;
-   int smoothMode = 0;
 
    Group()
    {

@@ -159,8 +159,7 @@ void KeyboardLetters(unsigned char key, int x, int y)
            break;
 
        default:
-           if (groups.size())
-               groups[active_group].CalcCenter();
+           break;
        }
    }
 
