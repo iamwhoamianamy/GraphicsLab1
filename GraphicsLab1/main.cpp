@@ -4,12 +4,14 @@
 #include "Group.h"
 #include "Point.h"
 #include "Vec2.h"
+#include <Windows.h>
 
 using namespace std;
 
 int WIDTH = 1680, HEIGHT = 1050;
 int active_group = -1;
 int counter = 0;
+bool is_action = false;
 vector<Group> groups;
 
 // Функция для отрисовки строки
@@ -164,11 +166,7 @@ void KeyboardLetters(unsigned char key, int x, int y)
                    groups[active_group].OnEnableSmoothing(counter);
                }
            break;
-
-       default:
-           break;
        }
-       cout << counter << endl;
    }
 
    glutPostRedisplay();

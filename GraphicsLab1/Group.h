@@ -158,10 +158,6 @@ public:
          points[active_point].Scale(factor, from);
    }
 
-   void EnableSmoothing()
-   {
-
-   }
 
    void OnEnableSmoothing(int counter)
    {
