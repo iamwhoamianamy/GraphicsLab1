@@ -37,7 +37,8 @@ public:
    void ChoseNextActivePoint()
    {
       if(!is_center_active)
-         active_point = (active_point + 1) % points.size();
+         if(points.size())
+            active_point = (active_point + 1) % points.size();
    }
 
    void ChosePrevActivePoint()
@@ -50,8 +51,12 @@ public:
    // Добавление точки в группу
    void AddPoint(Point point)
    {
-      points.push_back(point);
-      active_point = points.size() - 1;
+      if(points.size())
+         points.insert(points.begin() + active_point + 1, point);
+      else
+         points.push_back(point);
+
+      ChoseNextActivePoint();
       CalcCenter();
    }
 
