@@ -9,6 +9,7 @@ using namespace std;
 
 int WIDTH = 1680, HEIGHT = 1050;
 int active_group = -1;
+int counter = 0;
 vector<Group> groups;
 
 // Функция для отрисовки строки
@@ -95,6 +96,7 @@ void KeyboardLetters(unsigned char key, int x, int y)
    double angle = 0.02;
    double scale = 1.05;
 
+
    if (active_group != -1)
    {
        switch (key)
@@ -150,18 +152,23 @@ void KeyboardLetters(unsigned char key, int x, int y)
 
        case 'h':
            if (groups.size())
-               if (groups[active_group].is_smoothing)
-                   groups[active_group].OnDisableSmoothing();
-               else
+               if (groups[active_group].is_smoothing && counter > 3)
                {
+                   groups[active_group].OnDisableSmoothing();
+                   counter = 0;
+               }
+               else 
+               {
+                   counter++;
                    groups[active_group].is_smoothing = true;
-                   groups[active_group].OnEnableSmoothing();
+                   groups[active_group].OnEnableSmoothing(counter);
                }
            break;
 
        default:
            break;
        }
+       cout << counter << endl;
    }
 
    glutPostRedisplay();

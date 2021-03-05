@@ -83,7 +83,6 @@ public:
       glColor3ub(R, G, B);
       glPointSize(size);
       glBegin(GLenum(mode));
-      cout << mode << endl;
 
       for(size_t i = 0; i < points.size(); i++)
          glVertex2i(points[i].loc.x, points[i].loc.y);
@@ -159,37 +158,79 @@ public:
          points[active_point].Scale(factor, from);
    }
 
-   void OnEnableSmoothing()
+   void EnableSmoothing()
+   {
+
+   }
+
+   void OnEnableSmoothing(int counter)
    {
        if (is_smoothing)
        {
            glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
            glEnable(GL_BLEND);
 
-           switch (mode)
+           switch (counter)
            {
-           case(0):
+           case(1):
+           {
+               switch (mode)
+               {
+               case(0):
+               {
+                   glEnable(GL_POINT_SMOOTH);
+                   glHint(GL_POINT_SMOOTH_HINT, GL_NICEST);
+                   break;
+               }
+               case(1):
+               case(2):
+               case(3):
+               case(7):
+               case(8):
+               {
+                   glEnable(GL_LINE_SMOOTH);
+                   glHint(GL_POINT_SMOOTH_HINT, GL_NICEST);
+                   break;
+               }
+               case(4):
+               case(5):
+               case(6):
+               case(9):
+               case(10):
+               {
+                   glEnable(GL_POLYGON_SMOOTH);
+                   glHint(GL_POLYGON_SMOOTH_HINT, GL_NICEST);
+                   break;
+               }
+               default:
+                   break;
+               }
+               break;
+           }
+           case(2):
+           {
                glEnable(GL_POINT_SMOOTH);
                glHint(GL_POINT_SMOOTH_HINT, GL_NICEST);
-           case(1):
-           case(2):
-           case(3):
-           case(7):
-           case(8):
                glEnable(GL_LINE_SMOOTH);
                glHint(GL_POINT_SMOOTH_HINT, GL_NICEST);
-           case(4):
-           case(5):
-           case(6):
-           case(9):
-           case(10):
+               break;
+           }
+           case(3):
+           {
+               glEnable(GL_POINT_SMOOTH);
+               glHint(GL_POINT_SMOOTH_HINT, GL_NICEST);
+               glEnable(GL_LINE_SMOOTH);
+               glHint(GL_POINT_SMOOTH_HINT, GL_NICEST);
                glEnable(GL_POLYGON_SMOOTH);
                glHint(GL_POLYGON_SMOOTH_HINT, GL_NICEST);
+               break;
+           }
            default:
                break;
            }
        }
    }
+
 
    void OnDisableSmoothing()
    {
@@ -200,5 +241,4 @@ public:
 
        is_smoothing = false;
    }
-
 };
