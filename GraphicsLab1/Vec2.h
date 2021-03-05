@@ -65,13 +65,11 @@ public:
 
    friend Vec2 operator *(Vec2 lhs, const double& rhs)
    {
-      lhs *= rhs;
-      return lhs;
+      return lhs *= rhs;
    }
 
    friend Vec2 operator /(Vec2 lhs, const double& rhs)
    {
-      lhs /= rhs;
-      return lhs;
+      return lhs /= rhs;
    }
 };

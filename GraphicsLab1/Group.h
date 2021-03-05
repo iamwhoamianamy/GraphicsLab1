@@ -2,7 +2,6 @@
 #include <vector>
 #include "glut.h"
 #include "Point.h"
-#include "Vec2.h"
 
 using namespace std;
 
@@ -17,6 +16,7 @@ public:
    bool is_center_active = false;
 
    int mode = 0;
+   int smoothMode = 0;
 
    Group()
    {
@@ -83,12 +83,14 @@ public:
       glColor3ub(R, G, B);
       glPointSize(size);
       glBegin(GLenum(mode));
+      cout << mode << endl;
 
       for(size_t i = 0; i < points.size(); i++)
          glVertex2i(points[i].loc.x, points[i].loc.y);
 
       glEnd();
    }
+
 
    void DrawCenter()
    {
@@ -141,7 +143,6 @@ public:
 
    void Rotate(const double& angle, Vec2 around)
    {
-
       if(is_center_active)
          for(size_t i = 0; i < points.size(); i++)
             points[i].Rotate(angle, around);
@@ -157,4 +158,41 @@ public:
       else if(points.size())
          points[active_point].Scale(factor, from);
    }
+
+   void OnEnableSmoothing()
+   {
+       glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+       glEnable(GL_BLEND);
+
+       switch (mode)
+       {
+       case(0):
+           glEnable(GL_POINT_SMOOTH);
+           glHint(GL_POINT_SMOOTH_HINT, GL_NICEST);
+       case(1):
+       case(2):
+       case(3):
+       case(7):
+       case(8):
+           glEnable(GL_LINE_SMOOTH);
+           glHint(GL_POINT_SMOOTH_HINT, GL_NICEST);
+       case(4):
+       case(5):
+       case(6):
+       case(9):
+           glEnable(GL_POLYGON_SMOOTH);
+           glHint(GL_POLYGON_SMOOTH_HINT, GL_NICEST);
+       default:
+           break;
+       }
+   }
+
+   void OnDisableSmoothing()
+   {
+       glDisable(GL_BLEND);
+       glDisable(GL_POINT_SMOOTH);
+       glDisable(GL_LINE_SMOOTH);
+       glDisable(GL_POLYGON_SMOOTH);
+   }
+
 };
