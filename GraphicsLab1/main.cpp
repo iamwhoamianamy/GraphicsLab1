@@ -150,12 +150,13 @@ void KeyboardLetters(unsigned char key, int x, int y)
 
        case 'h':
            if (groups.size())
-               groups[active_group].OnEnableSmoothing();
-           break;
-
-       case 'j':
-           if (groups.size())
-               groups[active_group].OnDisableSmoothing();
+               if (groups[active_group].is_smoothing)
+                   groups[active_group].OnDisableSmoothing();
+               else
+               {
+                   groups[active_group].is_smoothing = true;
+                   groups[active_group].OnEnableSmoothing();
+               }
            break;
 
        default:

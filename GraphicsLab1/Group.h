@@ -14,6 +14,7 @@ public:
    GLfloat size = 10;
    int active_point = -1;
    bool is_center_active = false;
+   bool is_smoothing = false;
 
    int mode = 0;
 
@@ -160,29 +161,33 @@ public:
 
    void OnEnableSmoothing()
    {
-       glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-       glEnable(GL_BLEND);
-
-       switch (mode)
+       if (is_smoothing)
        {
-       case(0):
-           glEnable(GL_POINT_SMOOTH);
-           glHint(GL_POINT_SMOOTH_HINT, GL_NICEST);
-       case(1):
-       case(2):
-       case(3):
-       case(7):
-       case(8):
-           glEnable(GL_LINE_SMOOTH);
-           glHint(GL_POINT_SMOOTH_HINT, GL_NICEST);
-       case(4):
-       case(5):
-       case(6):
-       case(9):
-           glEnable(GL_POLYGON_SMOOTH);
-           glHint(GL_POLYGON_SMOOTH_HINT, GL_NICEST);
-       default:
-           break;
+           glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+           glEnable(GL_BLEND);
+
+           switch (mode)
+           {
+           case(0):
+               glEnable(GL_POINT_SMOOTH);
+               glHint(GL_POINT_SMOOTH_HINT, GL_NICEST);
+           case(1):
+           case(2):
+           case(3):
+           case(7):
+           case(8):
+               glEnable(GL_LINE_SMOOTH);
+               glHint(GL_POINT_SMOOTH_HINT, GL_NICEST);
+           case(4):
+           case(5):
+           case(6):
+           case(9):
+           case(10):
+               glEnable(GL_POLYGON_SMOOTH);
+               glHint(GL_POLYGON_SMOOTH_HINT, GL_NICEST);
+           default:
+               break;
+           }
        }
    }
 
@@ -192,6 +197,8 @@ public:
        glDisable(GL_POINT_SMOOTH);
        glDisable(GL_LINE_SMOOTH);
        glDisable(GL_POLYGON_SMOOTH);
+
+       is_smoothing = false;
    }
 
 };
