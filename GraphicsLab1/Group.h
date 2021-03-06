@@ -10,11 +10,12 @@ class Group
 public:
    vector<Point> points;
    Point center;
-   GLubyte R = 255, G = 255, B = 255;
+   GLubyte R = 0, G = 0, B = 0;
    GLfloat size = 10;
    int active_point = -1;
    bool is_center_active = false;
    bool is_smoothing = false;
+   int counter = 0;
 
    int mode = 0;
 
@@ -80,6 +81,8 @@ public:
    // Отрисовка точек в соответствии с выбранным алгоритмом
    void Draw()
    {
+       OnEnableSmoothing(counter);
+
       glColor3ub(R, G, B);
       glPointSize(size);
       glBegin(GLenum(mode));
@@ -88,12 +91,14 @@ public:
          glVertex2i(points[i].loc.x, points[i].loc.y);
 
       glEnd();
+
+      OnDisableSmoothing();
    }
 
 
    void DrawCenter()
    {
-      glColor3ub(255, 255, 255);
+      glColor3ub(0, 0, 0);
       glPointSize(size / 2);
       glBegin(GL_POINTS);
 
@@ -108,7 +113,7 @@ public:
 
    void DrawCasing()
    {
-      glColor3ub(255, 255, 255);
+      glColor3ub(0, 0, 0);
       glPointSize(size);
 
       for(size_t i = 0; i < points.size(); i++)
@@ -125,13 +130,19 @@ public:
 
    void Move(const double& x, const double& y)
    {
-      if(is_center_active)
-         for(size_t i = 0; i < points.size(); i++)
-            points[i].Move(Vec2(x, y));
-      else if(points.size())
-         points[active_point].Move(Vec2(x, y));
+       if (is_center_active)
+       {
+           for (size_t i = 0; i < points.size(); i++)
+               points[i].Move(Vec2(x, y));
+           center.loc += Vec2(x, y);
+       }
+      else if (points.size())
+      {
+          points[active_point].Move(Vec2(x, y));
 
-      CalcCenter();
+          CalcCenter();
+      }
+
    }
 
    /*void Translate(Vec2 around)

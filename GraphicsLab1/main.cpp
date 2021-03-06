@@ -8,11 +8,15 @@
 
 using namespace std;
 
-int WIDTH = 1680, HEIGHT = 1050;
+int WIDTH = 1000, HEIGHT = 500;
 int active_group = -1;
-int counter = 0;
 bool is_action = false;
 vector<Group> groups;
+
+enum keys { Empty, KeyR, KeyG, KeyB, KeyW, KeyA, KeyS, KeyD, KeyQ, KeyE,
+    KeyZ, KeyX, KeyC, KeyV, KeyF, KeyT, KeyH, KeyPlus, KeyMinus,
+    KeyUp, KeyDown, KeyLeft, KeyRight
+};
 
 // Функция для отрисовки строки
 void DrawString(int x, int y, GLubyte col, string s)
@@ -34,7 +38,7 @@ void DrawString(int x, int y, GLubyte col, string s)
 // Функция вывода на экран 
 void Display()
 {
-   glClearColor(0, 0, 0, 1);
+   glClearColor(255, 255, 255, 1);
    glClear(GL_COLOR_BUFFER_BIT);
 
    // Отрисовка точек всех групп
@@ -142,8 +146,11 @@ void KeyboardLetters(unsigned char key, int x, int y)
            // Выбор центральной точки группы
        case 'f':
            if (groups.size())
+           {
                if (groups[active_group].points.size() > 1)
                    groups[active_group].is_center_active = !groups[active_group].is_center_active;
+               groups[active_group].CalcCenter();
+           }
            break;
 
            // Выбор режима отрисовки
@@ -154,16 +161,17 @@ void KeyboardLetters(unsigned char key, int x, int y)
 
        case 'h':
            if (groups.size())
-               if (groups[active_group].is_smoothing && counter > 3)
+               if (groups[active_group].is_smoothing && groups[active_group].counter > 3)
                {
-                   groups[active_group].OnDisableSmoothing();
-                   counter = 0;
+                   //groups[active_group].OnDisableSmoothing();
+                   groups[active_group].counter = 0;
                }
                else 
                {
-                   counter++;
+                   groups[active_group].counter = (groups[active_group].counter + 1) % 4;
+                   cout << groups[active_group].counter;
                    groups[active_group].is_smoothing = true;
-                   groups[active_group].OnEnableSmoothing(counter);
+                   //groups[active_group].OnEnableSmoothing(counter);
                }
            break;
        }
@@ -224,7 +232,7 @@ void Mouse(int button, int state, int x, int y)
    }
    
    // Удаление последней точки по правому клику
-   if(button == GLUT_RIGHT_BUTTON)
+   if(button == GLUT_MIDDLE_BUTTON)
    {
       if(groups.size())
           groups[active_group].DeletePoint();
@@ -233,13 +241,103 @@ void Mouse(int button, int state, int x, int y)
    glutPostRedisplay();
 }
 
+void Menu(int pos)
+{
+    int key = (keys)pos;
+
+    switch (key)
+    {
+    case KeyR: KeyboardLetters('r', 0, 0); break;
+    case KeyG: KeyboardLetters('g', 0, 0); break;
+    case KeyB: KeyboardLetters('b', 0, 0); break;
+
+    case KeyW: KeyboardLetters('w', 0, 0); break;
+    case KeyS: KeyboardLetters('s', 0, 0); break;
+    case KeyA: KeyboardLetters('a', 0, 0); break;
+    case KeyD: KeyboardLetters('d', 0, 0); break;
+
+    case KeyQ: KeyboardLetters('q', 0, 0); break;
+    case KeyE: KeyboardLetters('e', 0, 0); break;
+
+    case KeyC: KeyboardLetters('c', 0, 0); break;
+    case KeyV: KeyboardLetters('v', 0, 0); break;
+
+    case KeyZ: KeyboardLetters('z', 0, 0); break;
+    case KeyX: KeyboardLetters('x', 0, 0); break;
+
+    case KeyF: KeyboardLetters('f', 0, 0); break;
+    case KeyT: KeyboardLetters('t', 0, 0); break;
+    case KeyH: KeyboardLetters('h', 0, 0); break;
+
+    case KeyPlus: KeyboardLetters('=', 0, 0); break;
+    case KeyMinus: KeyboardLetters('-', 0, 0); break;
+
+    case KeyLeft: KeyboardSpecials(GLUT_KEY_LEFT, 0, 0); break;
+    case KeyRight: KeyboardSpecials(GLUT_KEY_RIGHT, 0, 0); break;
+    case KeyUp: KeyboardSpecials(GLUT_KEY_UP, 0, 0); break;
+    case KeyDown: KeyboardSpecials(GLUT_KEY_DOWN, 0, 0); break;
+
+    default:
+        int menu_color = glutCreateMenu(Menu);
+        glutAddMenuEntry("Компонента R", KeyR);
+        glutAddMenuEntry("Компонента G", KeyG);
+        glutAddMenuEntry("Компонента B", KeyB);
+
+        int menu_move = glutCreateMenu(Menu);
+        glutAddMenuEntry("Вверх", KeyW);
+        glutAddMenuEntry("Вниз", KeyS);
+        glutAddMenuEntry("Bлево", KeyA);
+        glutAddMenuEntry("Вправо", KeyD);
+
+        int menu_size = glutCreateMenu(Menu);
+        glutAddMenuEntry("Увеличить", KeyC);
+        glutAddMenuEntry("Уменьшить", KeyV);
+
+        int menu_scale = glutCreateMenu(Menu);
+        glutAddMenuEntry("Расстянуть", KeyZ);
+        glutAddMenuEntry("Сжать", KeyX);
+
+        int menu_rotate = glutCreateMenu(Menu);
+        glutAddMenuEntry("Повернуть против часовой", KeyQ);
+        glutAddMenuEntry("Повернуть по часовой", KeyE);
+
+        int menu_group = glutCreateMenu(Menu);
+        glutAddMenuEntry("Добавить группу", KeyPlus);
+        glutAddMenuEntry("Удалить группу", KeyMinus);
+
+        int menu_misc = glutCreateMenu(Menu);
+        glutAddMenuEntry("Выбрать центр", KeyF);
+        glutAddMenuEntry("Переключение режима отрисовки", KeyT);
+        glutAddMenuEntry("Переключение режима сглаживания", KeyH);
+
+        int menu_select = glutCreateMenu(Menu);
+        glutAddMenuEntry("Выбрать следующую вершину группы", KeyRight);
+        glutAddMenuEntry("Выбрать предыдущую вершину группы", KeyLeft);
+        glutAddMenuEntry("Выбрать следующую группу", KeyUp);
+        glutAddMenuEntry("Выбрать предыдущую группу", KeyDown);
+
+        int menu = glutCreateMenu(Menu);
+        glutAddSubMenu("Смена цвета", menu_color);
+        glutAddSubMenu("Изменение размера точки", menu_size);
+        glutAddSubMenu("Перемещение", menu_move);
+        glutAddSubMenu("Масштабирование", menu_scale);
+        glutAddSubMenu("Вращение", menu_rotate);
+        glutAddSubMenu("Управление группами", menu_group);
+        glutAddSubMenu("Переключение между точками и группами", menu_select);
+        glutAddSubMenu("Дополнительные", menu_misc);
+
+        glutAttachMenu(GLUT_RIGHT_BUTTON);
+        KeyboardLetters(Empty, 0, 0);
+    }
+}
+
 int main(int argc, char** argv)
 {
     glutInit(&argc, argv);
     glutInitDisplayMode(GLUT_RGB);
     glutInitWindowSize(WIDTH, HEIGHT);
-    glutCreateWindow("Пожилое приложение");
-
+    glutCreateWindow("КГ Лабораторная работа №1");
+    Menu(Empty);
     glutDisplayFunc(Display);
     glutReshapeFunc(Reshape);
     glutKeyboardFunc(KeyboardLetters);
