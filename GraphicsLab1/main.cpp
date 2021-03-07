@@ -8,7 +8,7 @@
 
 using namespace std;
 
-int WIDTH = 1000, HEIGHT = 500;
+int WIDTH = 250, HEIGHT = 250;
 int active_group = -1;
 bool is_action = false;
 vector<Group> groups;
