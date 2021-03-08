@@ -8,7 +8,7 @@
 
 using namespace std;
 
-int WIDTH = 250, HEIGHT = 250;
+int WIDTH = 300, HEIGHT = 300;
 int active_group = -1;
 bool is_action = false;
 vector<Group> groups;
@@ -54,27 +54,27 @@ void Display()
 
    string s;
    s = "Total groups: " + to_string(groups.size());
-   DrawString(10, 70, 200, s);
+   DrawString(10, 70, 0, s);
    s = active_group >=0 ? "Current group: " + to_string(active_group + 1) : "Current group: none";
-   DrawString(10, 50, 200, s);
+   DrawString(10, 50, 0, s);
 
    if(active_group != -1)
    {
       s = "Points in group: " + to_string(groups[active_group].points.size());
-      DrawString(10, 30, 200, s);
+      DrawString(10, 30, 0, s);
    }
    if(active_group >= 0)
    {
       if(groups[active_group].active_point == -2)
       {
          s = "Current point: center";
-         DrawString(10, 10, 200, s);
+         DrawString(10, 10, 0, s);
       }
       else
          if(groups[active_group].active_point != -1)
          {
             s = "Current point: " + to_string(groups[active_group].active_point + 1);
-            DrawString(10, 10, 200, s);
+            DrawString(10, 10, 0, s);
          }
    }
 
