@@ -104,55 +104,69 @@ void KeyboardLetters(unsigned char key, int x, int y)
    double scale = 1.05;
 
 
-   if (groups.size())
+   if(groups.size())
    {
       Group* g = &groups[active_group];
 
-       switch (key)
-       {
-           // Передвижение точек по осям
-       case 'w': g->Move(move_speed * +0, move_speed * +1); break;
-       case 'a': g->Move(move_speed * -1, move_speed * +0); break;
-       case 's': g->Move(move_speed * +0, move_speed * -1); break;
-       case 'd': g->Move(move_speed * +1, move_speed * +0); break;
+      switch(key)
+      {
+         // Передвижение точек по осям
+      case 'w': g->Move(move_speed * +0, move_speed * +1); break;
+      case 'a': g->Move(move_speed * -1, move_speed * +0); break;
+      case 's': g->Move(move_speed * +0, move_speed * -1); break;
+      case 'd': g->Move(move_speed * +1, move_speed * +0); break;
 
-           // Вращение точек
-       case 'q': g->Rotate(angle, groups[active_group].center.loc);
-           break;
-       case 'e': g->Rotate(-angle, groups[active_group].center.loc);
-           break;
+         // Вращение точек
+      case 'q': g->Rotate(angle, groups[active_group].center.loc);
+         break;
+      case 'e': g->Rotate(-angle, groups[active_group].center.loc);
+         break;
 
-           // Масштабирование точек
-       case 'z': g->Scale(scale, groups[active_group].center.loc); break;
-       case 'x': g->Scale(1 / scale, groups[active_group].center.loc); break;
+         // Масштабирование точек
+      case 'z': g->Scale(scale, groups[active_group].center.loc); break;
+      case 'x': g->Scale(1 / scale, groups[active_group].center.loc); break;
 
-           // Изменение цвета точек
-       case 'r': g->R += color_speed; break;
-       case 'g': g->G += color_speed; break;
-       case 'b': g->B += color_speed; break;
+         // Изменение цвета точек
+      case 'r': g->R += color_speed; break;
+      case 'g': g->G += color_speed; break;
+      case 'b': g->B += color_speed; break;
 
-           // Изменение размера точек
-       case 'c': g->size += size_speed; break;
-       case 'v': g->size -= size_speed; break;
+         // Изменение размера точек
+      case 'c': g->size += size_speed; break;
+      case 'v': g->size -= size_speed; break;
 
-           // Выбор центральной точки группы
-       case 'f':
-            if (g->points.size() > 1)
-               g->is_center_active = !g->is_center_active;
-            g->CalcCenter();
-           break;
+         // Переключение режима редактирования группы
+      case 'f':
+         if(g->points.size() > 1)
+            g->center_mode = (g->center_mode + 1) % 3;
+         break;
 
-           // Выбор режима отрисовки
-       case 't':
-           if (groups.size())
-              g->mode = (g->mode + 1) % 10;
-           break;
+         // Пересчет геометрического центра группы
+      case ' ':
+         g->CalcCenter();
+         break;
 
-       case 'h':
-          g->is_smoothing = !g->is_smoothing;
-          break;
-       }
+         // Выбор режима отрисовки
+      case 't':
+         if(groups.size())
+            g->mode = (g->mode + 1) % 10;
+         break;
+
+      case 'h':
+         g->is_smoothing = !g->is_smoothing;
+         break;
+
+         // Отражение точек
+      case 'k':
+         g->MirrorX();
+         break;
+
+      case 'l':
+         g->MirrorY();
+         break;
+      }
    }
+
 
    switch(key)
    {
@@ -182,12 +196,12 @@ void KeyboardSpecials(int key, int x, int y)
    case GLUT_KEY_UP:
       active_group = (active_group + 1) % groups.size();
       if(groups.size())
-         groups[active_group].is_center_active = true;
+         groups[active_group].center_mode = 1;
       break;
    case GLUT_KEY_DOWN:
       active_group = (active_group - 1 + groups.size()) % groups.size();
       if(groups.size())
-         groups[active_group].is_center_active = true;
+         groups[active_group].center_mode = 1;
       break;
 
       // Переключение между точками активной группы

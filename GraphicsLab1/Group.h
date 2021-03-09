@@ -13,7 +13,7 @@ public:
    GLubyte R = 0, G = 0, B = 0;
    GLfloat size = 10;
    int active_point = -1;
-   bool is_center_active = false;
+   int center_mode = 0;
    bool is_smoothing = false;
 
    int mode = 0;
@@ -37,7 +37,7 @@ public:
    // Функция вычисления следующей активной точки группы
    void ChoseNextActivePoint()
    {
-      if(!is_center_active)
+      if(!center_mode)
          if(points.size())
             active_point = (active_point + 1) % points.size();
    }
@@ -45,7 +45,7 @@ public:
    // Функция вычисления предыдущей активной точки группы
    void ChosePrevActivePoint()
    {
-      if(!is_center_active)
+      if(!center_mode)
          if(points.size())
             active_point = (active_point - 1 + points.size()) % points.size();
    }
@@ -53,23 +53,24 @@ public:
    // Добавление точки в группу
    void AddPoint(Point point)
    {
-      if(points.size())
-         points.insert(points.begin() + active_point + 1, point);
-      else
+      if(points.size() == 0)
          points.push_back(point);
+      else if(points.size() == 1)
+      {
+         points.insert(points.begin() + active_point + 1, point);
+         CalcCenter();
+      }
+      else
+         points.insert(points.begin() + active_point + 1, point);
 
       ChoseNextActivePoint();
-      CalcCenter();
    }
 
    // Удаление точки из группы
    void DeletePoint()
    {
       if(points.size())
-      {
          points.erase(points.begin() + active_point);
-         CalcCenter();
-      }
 
       ChosePrevActivePoint();
    }
@@ -118,8 +119,13 @@ public:
 
       if(points.size())
       {
-         if(is_center_active)
+         if(center_mode == 1)
             center.DrawCasing(size * 1.5);
+         else if(center_mode == 2)
+         {
+            center.DrawCasing(size * 1.5);
+            center.DrawCasing(size * 2);
+         }
          else
             points[active_point].DrawCasing(size * 1.5);
       }
@@ -128,25 +134,23 @@ public:
    // Передвижение точек группы
    void Move(const double& x, const double& y)
    {
-       if (is_center_active)
-       {
-           for (size_t i = 0; i < points.size(); i++)
-               points[i].Move(Vec2(x, y));
-           center.loc += Vec2(x, y);
-       }
-      else if (points.size())
+      if(center_mode == 1)
       {
-          points[active_point].Move(Vec2(x, y));
+         for(size_t i = 0; i < points.size(); i++)
+            points[i].Move(Vec2(x, y));
 
-          CalcCenter();
+         center.loc += Vec2(x, y);
       }
-
+      else if(center_mode == 2)
+         center.loc += Vec2(x, y);
+      else if (points.size())
+          points[active_point].Move(Vec2(x, y));
    }
 
    // Поворот точек вокруг центра
    void Rotate(const double& angle, Vec2 around)
    {
-      if(is_center_active)
+      if(center_mode)
          for(size_t i = 0; i < points.size(); i++)
             points[i].Rotate(angle, around);
       else if(points.size())
@@ -156,11 +160,31 @@ public:
    // Масштабирование точек относительно центра
    void Scale(const double& factor, Vec2 from)
    {
-      if(is_center_active)
+      if(center_mode)
          for(size_t i = 0; i < points.size(); i++)
             points[i].Scale(factor, from);
       else if(points.size())
          points[active_point].Scale(factor, from);
+   }
+
+   // Отражение точек по оси X относительно центра
+   void MirrorX()
+   {
+      if(center_mode)
+         for(size_t i = 0; i < points.size(); i++)
+            points[i].loc.x += (center.loc.x - points[i].loc.x) * 2;
+      else if(points.size())
+         points[active_point].loc.x += (center.loc.x - points[active_point].loc.x) * 2;
+   }
+
+   // Отражение точек по оси Y относительно центра
+   void MirrorY()
+   {
+      if(center_mode)
+         for(size_t i = 0; i < points.size(); i++)
+            points[i].loc.y += (center.loc.y - points[i].loc.y) * 2;
+      else if(points.size())
+         points[active_point].loc.y += (center.loc.y - points[active_point].loc.y) * 2;
    }
 
    void OnEnableSmoothing()
@@ -187,7 +211,6 @@ public:
            }
        }
    }
-
 
    void OnDisableSmoothing()
    {
