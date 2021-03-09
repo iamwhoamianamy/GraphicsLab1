@@ -16,7 +16,7 @@ public:
    int center_mode = 0;
    bool is_smoothing = false;
 
-   int mode = 0;
+   int render_mode = 0;
 
    Group()
    {
@@ -82,7 +82,7 @@ public:
 
       glColor3ub(R, G, B);
       glPointSize(size);
-      glBegin(GLenum(mode));
+      glBegin(GLenum(render_mode));
 
       for(size_t i = 0; i < points.size(); i++)
          glVertex2i(points[i].loc.x, points[i].loc.y);
@@ -194,12 +194,12 @@ public:
            glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
            glEnable(GL_BLEND);
 
-           if(mode == 0)
+           if(render_mode == 0)
            {
               glEnable(GL_POINT_SMOOTH);
               glHint(GL_POINT_SMOOTH_HINT, GL_NICEST);
            }
-           else if(mode > 0 && mode < 4)
+           else if(render_mode > 0 && render_mode < 4)
            {
               glEnable(GL_LINE_SMOOTH);
               glHint(GL_POINT_SMOOTH_HINT, GL_NICEST);

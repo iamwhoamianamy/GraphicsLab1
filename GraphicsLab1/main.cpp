@@ -14,8 +14,8 @@ bool is_action = false;
 vector<Group> groups;
 
 enum keys { Empty, KeyR, KeyG, KeyB, KeyW, KeyA, KeyS, KeyD, KeyQ, KeyE,
-    KeyZ, KeyX, KeyC, KeyV, KeyF, KeyT, KeyH, KeyPlus, KeyMinus,
-    KeyUp, KeyDown, KeyLeft, KeyRight
+    KeyZ, KeyX, KeyC, KeyV, KeyF, KeyT, KeyH, KeyK, KeyL, KeyPlus, KeyMinus,
+    KeyUp, KeyDown, KeyLeft, KeyRight, KeySpace
 };
 
 // Функция для отрисовки строки
@@ -47,11 +47,13 @@ void Display()
 
    // Отрисовка указателей активной группы
    if(groups.size())
+   {
       groups[active_group].DrawCasing();
 
-   if(groups.size() && groups[active_group].points.size() > 1)
-      groups[active_group].DrawCenter();
-
+      if(groups[active_group].points.size() > 1)
+         groups[active_group].DrawCenter();
+   }
+   
    // Отрисовка информации о группах и их вершинах
    string s;
    s = "Total groups: " + to_string(groups.size());
@@ -59,24 +61,20 @@ void Display()
    s = active_group >=0 ? "Current group: " + to_string(active_group + 1) : "Current group: none";
    DrawString(10, 50, 0, s);
 
-   if(active_group != -1)
+   if(groups.size())
    {
       s = "Points in group: " + to_string(groups[active_group].points.size());
       DrawString(10, 30, 0, s);
-   }
-   if(active_group >= 0)
-   {
-      if(groups[active_group].active_point == -2)
+
+      if(groups[active_group].points.size())
       {
-         s = "Current point: center";
+         if(groups[active_group].center_mode)
+            s = "Current point: center";
+         else
+            s = "Current point: " + to_string(groups[active_group].active_point + 1);
+         
          DrawString(10, 10, 0, s);
       }
-      else
-         if(groups[active_group].active_point != -1)
-         {
-            s = "Current point: " + to_string(groups[active_group].active_point + 1);
-            DrawString(10, 10, 0, s);
-         }
    }
 
    glFinish();
@@ -102,7 +100,6 @@ void KeyboardLetters(unsigned char key, int x, int y)
    double size_speed = 1;
    double angle = 0.02;
    double scale = 1.05;
-
 
    if(groups.size())
    {
@@ -152,6 +149,7 @@ void KeyboardLetters(unsigned char key, int x, int y)
             g->mode = (g->mode + 1) % 10;
          break;
 
+         // Переклбчение сглаживания отрисовки
       case 'h':
          g->is_smoothing = !g->is_smoothing;
          break;
@@ -270,9 +268,8 @@ void Menu(int pos)
     case KeyZ: KeyboardLetters('z', 0, 0); break;
     case KeyX: KeyboardLetters('x', 0, 0); break;
 
-    case KeyF: KeyboardLetters('f', 0, 0); break;
-    case KeyT: KeyboardLetters('t', 0, 0); break;
-    case KeyH: KeyboardLetters('h', 0, 0); break;
+    case KeyK: KeyboardLetters('k', 0, 0); break;
+    case KeyL: KeyboardLetters('l', 0, 0); break;
 
     case KeyPlus: KeyboardLetters('=', 0, 0); break;
     case KeyMinus: KeyboardLetters('-', 0, 0); break;
@@ -281,6 +278,11 @@ void Menu(int pos)
     case KeyRight: KeyboardSpecials(GLUT_KEY_RIGHT, 0, 0); break;
     case KeyUp: KeyboardSpecials(GLUT_KEY_UP, 0, 0); break;
     case KeyDown: KeyboardSpecials(GLUT_KEY_DOWN, 0, 0); break;
+
+    case KeyF: KeyboardLetters('f', 0, 0); break;
+    case KeyT: KeyboardLetters('t', 0, 0); break;
+    case KeyH: KeyboardLetters('h', 0, 0); break;
+    case KeySpace: KeyboardLetters(' ', 0, 0); break;
 
     default:
         int menu_color = glutCreateMenu(Menu);
@@ -294,6 +296,10 @@ void Menu(int pos)
         glutAddMenuEntry("Bлево", KeyA);
         glutAddMenuEntry("Вправо", KeyD);
 
+        int menu_rotate = glutCreateMenu(Menu);
+        glutAddMenuEntry("Повернуть против часовой", KeyQ);
+        glutAddMenuEntry("Повернуть по часовой", KeyE);
+
         int menu_size = glutCreateMenu(Menu);
         glutAddMenuEntry("Увеличить", KeyC);
         glutAddMenuEntry("Уменьшить", KeyV);
@@ -302,18 +308,13 @@ void Menu(int pos)
         glutAddMenuEntry("Расстянуть", KeyZ);
         glutAddMenuEntry("Сжать", KeyX);
 
-        int menu_rotate = glutCreateMenu(Menu);
-        glutAddMenuEntry("Повернуть против часовой", KeyQ);
-        glutAddMenuEntry("Повернуть по часовой", KeyE);
+        int menu_mirror = glutCreateMenu(Menu);
+        glutAddMenuEntry("Отразить по X", KeyK);
+        glutAddMenuEntry("Отразить по Y", KeyL);
 
         int menu_group = glutCreateMenu(Menu);
         glutAddMenuEntry("Добавить группу", KeyPlus);
         glutAddMenuEntry("Удалить группу", KeyMinus);
-
-        int menu_misc = glutCreateMenu(Menu);
-        glutAddMenuEntry("Выбрать центр", KeyF);
-        glutAddMenuEntry("Переключение режима отрисовки", KeyT);
-        glutAddMenuEntry("Переключение режима сглаживания", KeyH);
 
         int menu_select = glutCreateMenu(Menu);
         glutAddMenuEntry("Выбрать следующую вершину группы", KeyRight);
@@ -321,15 +322,22 @@ void Menu(int pos)
         glutAddMenuEntry("Выбрать следующую группу", KeyUp);
         glutAddMenuEntry("Выбрать предыдущую группу", KeyDown);
 
+        int menu_misc = glutCreateMenu(Menu);
+        glutAddMenuEntry("Выбрать центр", KeyF);
+        glutAddMenuEntry("Переключение режима отрисовки", KeyT);
+        glutAddMenuEntry("Переключение режима сглаживания", KeyH);
+        glutAddMenuEntry("Пересчитать центр", KeySpace);
+
         int menu = glutCreateMenu(Menu);
         glutAddSubMenu("Смена цвета", menu_color);
-        glutAddSubMenu("Изменение размера точки", menu_size);
         glutAddSubMenu("Перемещение", menu_move);
-        glutAddSubMenu("Масштабирование", menu_scale);
         glutAddSubMenu("Вращение", menu_rotate);
+        glutAddSubMenu("Изменение размера точки", menu_size);
+        glutAddSubMenu("Масштабирование", menu_scale);
+        glutAddSubMenu("Отражение", menu_mirror);
         glutAddSubMenu("Управление группами", menu_group);
         glutAddSubMenu("Переключение между точками и группами", menu_select);
-        glutAddSubMenu("Дополнительные", menu_misc);
+        glutAddSubMenu("Дополнительно", menu_misc);
 
         glutAttachMenu(GLUT_RIGHT_BUTTON);
         KeyboardLetters(Empty, 0, 0);
@@ -348,7 +356,6 @@ int main(int argc, char** argv)
     glutKeyboardFunc(KeyboardLetters);
     glutSpecialFunc(KeyboardSpecials);
     glutMouseFunc(Mouse);
-
 
     glutMainLoop();
 }
