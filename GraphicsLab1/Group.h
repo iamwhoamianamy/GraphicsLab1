@@ -15,7 +15,6 @@ public:
    int active_point = -1;
    bool is_center_active = false;
    bool is_smoothing = false;
-   int counter = 0;
 
    int mode = 0;
 
@@ -35,6 +34,7 @@ public:
       center.loc /= points.size();
    }
 
+   // Функция вычисления следующей активной точки группы
    void ChoseNextActivePoint()
    {
       if(!is_center_active)
@@ -42,6 +42,7 @@ public:
             active_point = (active_point + 1) % points.size();
    }
 
+   // Функция вычисления предыдущей активной точки группы
    void ChosePrevActivePoint()
    {
       if(!is_center_active)
@@ -71,17 +72,12 @@ public:
       }
 
       ChosePrevActivePoint();
-
-      /*if(points.size())
-         active_point = points.size() - 1;
-      else
-         active_point = -1;*/
    }
 
    // Отрисовка точек в соответствии с выбранным алгоритмом
    void Draw()
    {
-       OnEnableSmoothing(counter);
+      OnEnableSmoothing();
 
       glColor3ub(R, G, B);
       glPointSize(size);
@@ -95,7 +91,7 @@ public:
       OnDisableSmoothing();
    }
 
-
+   // Отрисовка центра группы
    void DrawCenter()
    {
       glColor3ub(0, 0, 0);
@@ -111,6 +107,7 @@ public:
       glEnd();
    }
 
+   // Отрисовка рамок для активных точек
    void DrawCasing()
    {
       glColor3ub(0, 0, 0);
@@ -128,6 +125,7 @@ public:
       }
    }
 
+   // Передвижение точек группы
    void Move(const double& x, const double& y)
    {
        if (is_center_active)
@@ -145,12 +143,7 @@ public:
 
    }
 
-   /*void Translate(Vec2 around)
-   {
-      for(size_t i = 0; i < points.size(); i++)
-         points[i].loc += Vec2(around.x, around.y);
-   }*/
-
+   // Поворот точек вокруг центра
    void Rotate(const double& angle, Vec2 around)
    {
       if(is_center_active)
@@ -160,6 +153,7 @@ public:
          points[active_point].Rotate(angle, around);
    }
 
+   // Масштабирование точек относительно центра
    void Scale(const double& factor, Vec2 from)
    {
       if(is_center_active)
@@ -169,71 +163,27 @@ public:
          points[active_point].Scale(factor, from);
    }
 
-
-   void OnEnableSmoothing(int counter)
+   void OnEnableSmoothing()
    {
        if (is_smoothing)
        {
            glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
            glEnable(GL_BLEND);
 
-           switch (counter)
+           if(mode == 0)
            {
-           case(1):
-           {
-               switch (mode)
-               {
-               case(0):
-               {
-                   glEnable(GL_POINT_SMOOTH);
-                   glHint(GL_POINT_SMOOTH_HINT, GL_NICEST);
-                   break;
-               }
-               case(1):
-               case(2):
-               case(3):
-               case(7):
-               case(8):
-               {
-                   glEnable(GL_LINE_SMOOTH);
-                   glHint(GL_POINT_SMOOTH_HINT, GL_NICEST);
-                   break;
-               }
-               case(4):
-               case(5):
-               case(6):
-               case(9):
-               case(10):
-               {
-                   glEnable(GL_POLYGON_SMOOTH);
-                   glHint(GL_POLYGON_SMOOTH_HINT, GL_NICEST);
-                   break;
-               }
-               default:
-                   break;
-               }
-               break;
+              glEnable(GL_POINT_SMOOTH);
+              glHint(GL_POINT_SMOOTH_HINT, GL_NICEST);
            }
-           case(2):
+           else if(mode > 0 && mode < 4)
            {
-               glEnable(GL_POINT_SMOOTH);
-               glHint(GL_POINT_SMOOTH_HINT, GL_NICEST);
-               glEnable(GL_LINE_SMOOTH);
-               glHint(GL_POINT_SMOOTH_HINT, GL_NICEST);
-               break;
+              glEnable(GL_LINE_SMOOTH);
+              glHint(GL_POINT_SMOOTH_HINT, GL_NICEST);
            }
-           case(3):
+           else
            {
-               glEnable(GL_POINT_SMOOTH);
-               glHint(GL_POINT_SMOOTH_HINT, GL_NICEST);
-               glEnable(GL_LINE_SMOOTH);
-               glHint(GL_POINT_SMOOTH_HINT, GL_NICEST);
-               glEnable(GL_POLYGON_SMOOTH);
-               glHint(GL_POLYGON_SMOOTH_HINT, GL_NICEST);
-               break;
-           }
-           default:
-               break;
+              glEnable(GL_POLYGON_SMOOTH);
+              glHint(GL_POLYGON_SMOOTH_HINT, GL_NICEST);
            }
        }
    }
@@ -245,7 +195,5 @@ public:
        glDisable(GL_POINT_SMOOTH);
        glDisable(GL_LINE_SMOOTH);
        glDisable(GL_POLYGON_SMOOTH);
-
-       is_smoothing = false;
    }
 };

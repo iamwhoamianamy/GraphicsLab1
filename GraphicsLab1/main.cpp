@@ -8,7 +8,7 @@
 
 using namespace std;
 
-int WIDTH = 300, HEIGHT = 300;
+int WIDTH = 800, HEIGHT = 800;
 int active_group = -1;
 bool is_action = false;
 vector<Group> groups;
@@ -52,6 +52,7 @@ void Display()
    if(groups.size() && groups[active_group].points.size() > 1)
       groups[active_group].DrawCenter();
 
+   // Отрисовка информации о группах и их вершинах
    string s;
    s = "Total groups: " + to_string(groups.size());
    DrawString(10, 70, 0, s);
@@ -103,80 +104,70 @@ void KeyboardLetters(unsigned char key, int x, int y)
    double scale = 1.05;
 
 
-   if (active_group != -1)
+   if (groups.size())
    {
+      Group* g = &groups[active_group];
+
        switch (key)
        {
            // Передвижение точек по осям
-       case 'w': groups[active_group].Move(move_speed * +0, move_speed * +1); break;
-       case 'a': groups[active_group].Move(move_speed * -1, move_speed * +0); break;
-       case 's': groups[active_group].Move(move_speed * +0, move_speed * -1); break;
-       case 'd': groups[active_group].Move(move_speed * +1, move_speed * +0); break;
+       case 'w': g->Move(move_speed * +0, move_speed * +1); break;
+       case 'a': g->Move(move_speed * -1, move_speed * +0); break;
+       case 's': g->Move(move_speed * +0, move_speed * -1); break;
+       case 'd': g->Move(move_speed * +1, move_speed * +0); break;
 
            // Вращение точек
-       case 'q': groups[active_group].Rotate(angle, groups[active_group].center.loc);
+       case 'q': g->Rotate(angle, groups[active_group].center.loc);
            break;
-       case 'e': groups[active_group].Rotate(-angle, groups[active_group].center.loc);
+       case 'e': g->Rotate(-angle, groups[active_group].center.loc);
            break;
 
            // Масштабирование точек
-       case 'z': groups[active_group].Scale(scale, groups[active_group].center.loc); break;
-       case 'x': groups[active_group].Scale(1 / scale, groups[active_group].center.loc); break;
+       case 'z': g->Scale(scale, groups[active_group].center.loc); break;
+       case 'x': g->Scale(1 / scale, groups[active_group].center.loc); break;
 
            // Изменение цвета точек
-       case 'r': groups[active_group].R += color_speed; break;
-       case 'g': groups[active_group].G += color_speed; break;
-       case 'b': groups[active_group].B += color_speed; break;
+       case 'r': g->R += color_speed; break;
+       case 'g': g->G += color_speed; break;
+       case 'b': g->B += color_speed; break;
 
            // Изменение размера точек
-       case 'c': groups[active_group].size += size_speed; break;
-       case 'v': groups[active_group].size -= size_speed; break;
-
-           // Добавление и удаление групп
-       case '=':
-           groups.push_back(Group());
-           active_group = groups.size() - 1;
-           break;
-       case '-':
-           if (groups.size())
-               groups.erase(groups.begin() + active_group);
-           active_group = groups.size() - 1;
-           break;
+       case 'c': g->size += size_speed; break;
+       case 'v': g->size -= size_speed; break;
 
            // Выбор центральной точки группы
        case 'f':
-           if (groups.size())
-           {
-               if (groups[active_group].points.size() > 1)
-                   groups[active_group].is_center_active = !groups[active_group].is_center_active;
-               groups[active_group].CalcCenter();
-           }
+            if (g->points.size() > 1)
+               g->is_center_active = !g->is_center_active;
+            g->CalcCenter();
            break;
 
            // Выбор режима отрисовки
        case 't':
            if (groups.size())
-               groups[active_group].mode = (groups[active_group].mode + 1) % 10;
+              g->mode = (g->mode + 1) % 10;
            break;
 
        case 'h':
-           if (groups.size())
-               if (groups[active_group].is_smoothing && groups[active_group].counter > 3)
-               {
-                   //groups[active_group].OnDisableSmoothing();
-                   groups[active_group].counter = 0;
-               }
-               else 
-               {
-                   groups[active_group].counter = (groups[active_group].counter + 1) % 4;
-                   cout << groups[active_group].counter;
-                   groups[active_group].is_smoothing = true;
-                   //groups[active_group].OnEnableSmoothing(counter);
-               }
-           break;
+          g->is_smoothing = !g->is_smoothing;
+          break;
        }
    }
 
+   switch(key)
+   {
+      // Добавление и удаление групп
+   case '=':
+      groups.push_back(Group());
+      active_group = groups.size() - 1;
+      break;
+   case '-':
+      if(groups.size())
+         groups.erase(groups.begin() + active_group);
+      active_group = groups.size() - 1;
+      break;
+
+   }
    glutPostRedisplay();
 }
 
