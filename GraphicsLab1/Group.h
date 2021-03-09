@@ -10,7 +10,6 @@ class Group
 public:
    vector<Point> points;
    Point center;
-   GLubyte R = 0, G = 0, B = 0;
    GLfloat size = 10;
    int active_point = -1;
    int center_mode = 0;
@@ -79,17 +78,28 @@ public:
    void Draw()
    {
       OnEnableSmoothing();
-
-      glColor3ub(R, G, B);
       glPointSize(size);
+
       glBegin(GLenum(render_mode));
 
       for(size_t i = 0; i < points.size(); i++)
+      {
+         glColor3ub(points[i].r, points[i].g, points[i].b);
          glVertex2i(points[i].loc.x, points[i].loc.y);
+      }
 
       glEnd();
 
       OnDisableSmoothing();
+   }
+
+   void AddColour(const GLubyte& r, const GLubyte& g, const GLubyte& b)
+   {
+      if(center_mode)
+         for(size_t i = 0; i < points.size(); i++)
+            points[i].AddColour(r, g, b);
+      else if(points.size())
+         points[active_point].AddColour(r, g, b);
    }
 
    // Отрисовка центра группы
@@ -124,7 +134,7 @@ public:
          else if(center_mode == 2)
          {
             center.DrawCasing(size * 1.5);
-            center.DrawCasing(size * 2);
+            center.DrawCasing(size * 2.0);
          }
          else
             points[active_point].DrawCasing(size * 1.5);

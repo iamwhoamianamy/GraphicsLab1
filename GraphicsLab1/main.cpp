@@ -96,7 +96,7 @@ void Reshape(GLint w, GLint h)
 void KeyboardLetters(unsigned char key, int x, int y)
 {
    double move_speed = 5;
-   double color_speed = 5;
+   double colour_speed = 5;
    double size_speed = 1;
    double angle = 0.02;
    double scale = 1.05;
@@ -124,9 +124,9 @@ void KeyboardLetters(unsigned char key, int x, int y)
       case 'x': g->Scale(1 / scale, groups[active_group].center.loc); break;
 
          // Изменение цвета точек
-      case 'r': g->R += color_speed; break;
-      case 'g': g->G += color_speed; break;
-      case 'b': g->B += color_speed; break;
+      case 'r': g->AddColour(colour_speed, 0, 0); break;
+      case 'g': g->AddColour(0, colour_speed, 0); break;
+      case 'b': g->AddColour(0, 0, colour_speed); break;
 
          // Изменение размера точек
       case 'c': g->size += size_speed; break;
@@ -146,7 +146,7 @@ void KeyboardLetters(unsigned char key, int x, int y)
          // Выбор режима отрисовки
       case 't':
          if(groups.size())
-            g->mode = (g->mode + 1) % 10;
+            g->render_mode = (g->render_mode + 1) % 10;
          break;
 
          // Переклбчение сглаживания отрисовки

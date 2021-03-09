@@ -8,6 +8,7 @@ private:
 
 public:
    Vec2 loc;
+   GLubyte r = 0, g = 0, b = 0;
 
    Point()
    {
@@ -59,5 +60,12 @@ public:
       loc *= factor;
 
       Move(from);
+   }
+
+   void AddColour(const GLubyte& t_r, const GLubyte& t_g, const GLubyte& t_b)
+   {
+      r += t_r;
+      g += t_g;
+      b += t_b;
    }
 };
