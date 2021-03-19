@@ -246,102 +246,102 @@ void Mouse(int button, int state, int x, int y)
 
 void Menu(int pos)
 {
-    int key = (keys)pos;
+   int key = (keys)pos;
 
-    switch (key)
-    {
-    case KeyR: KeyboardLetters('r', 0, 0); break;
-    case KeyG: KeyboardLetters('g', 0, 0); break;
-    case KeyB: KeyboardLetters('b', 0, 0); break;
+   switch(key)
+   {
+   case KeyR: KeyboardLetters('r', 0, 0); break;
+   case KeyG: KeyboardLetters('g', 0, 0); break;
+   case KeyB: KeyboardLetters('b', 0, 0); break;
 
-    case KeyW: KeyboardLetters('w', 0, 0); break;
-    case KeyS: KeyboardLetters('s', 0, 0); break;
-    case KeyA: KeyboardLetters('a', 0, 0); break;
-    case KeyD: KeyboardLetters('d', 0, 0); break;
+   case KeyW: KeyboardLetters('w', 0, 0); break;
+   case KeyS: KeyboardLetters('s', 0, 0); break;
+   case KeyA: KeyboardLetters('a', 0, 0); break;
+   case KeyD: KeyboardLetters('d', 0, 0); break;
 
-    case KeyQ: KeyboardLetters('q', 0, 0); break;
-    case KeyE: KeyboardLetters('e', 0, 0); break;
+   case KeyQ: KeyboardLetters('q', 0, 0); break;
+   case KeyE: KeyboardLetters('e', 0, 0); break;
 
-    case KeyC: KeyboardLetters('c', 0, 0); break;
-    case KeyV: KeyboardLetters('v', 0, 0); break;
+   case KeyC: KeyboardLetters('c', 0, 0); break;
+   case KeyV: KeyboardLetters('v', 0, 0); break;
 
-    case KeyZ: KeyboardLetters('z', 0, 0); break;
-    case KeyX: KeyboardLetters('x', 0, 0); break;
+   case KeyZ: KeyboardLetters('z', 0, 0); break;
+   case KeyX: KeyboardLetters('x', 0, 0); break;
 
-    case KeyK: KeyboardLetters('k', 0, 0); break;
-    case KeyL: KeyboardLetters('l', 0, 0); break;
+   case KeyK: KeyboardLetters('k', 0, 0); break;
+   case KeyL: KeyboardLetters('l', 0, 0); break;
 
-    case KeyPlus: KeyboardLetters('=', 0, 0); break;
-    case KeyMinus: KeyboardLetters('-', 0, 0); break;
+   case KeyPlus: KeyboardLetters('=', 0, 0); break;
+   case KeyMinus: KeyboardLetters('-', 0, 0); break;
 
-    case KeyLeft: KeyboardSpecials(GLUT_KEY_LEFT, 0, 0); break;
-    case KeyRight: KeyboardSpecials(GLUT_KEY_RIGHT, 0, 0); break;
-    case KeyUp: KeyboardSpecials(GLUT_KEY_UP, 0, 0); break;
-    case KeyDown: KeyboardSpecials(GLUT_KEY_DOWN, 0, 0); break;
+   case KeyLeft: KeyboardSpecials(GLUT_KEY_LEFT, 0, 0); break;
+   case KeyRight: KeyboardSpecials(GLUT_KEY_RIGHT, 0, 0); break;
+   case KeyUp: KeyboardSpecials(GLUT_KEY_UP, 0, 0); break;
+   case KeyDown: KeyboardSpecials(GLUT_KEY_DOWN, 0, 0); break;
 
-    case KeyF: KeyboardLetters('f', 0, 0); break;
-    case KeyT: KeyboardLetters('t', 0, 0); break;
-    case KeyH: KeyboardLetters('h', 0, 0); break;
-    case KeySpace: KeyboardLetters(' ', 0, 0); break;
+   case KeyF: KeyboardLetters('f', 0, 0); break;
+   case KeyT: KeyboardLetters('t', 0, 0); break;
+   case KeyH: KeyboardLetters('h', 0, 0); break;
+   case KeySpace: KeyboardLetters(' ', 0, 0); break;
 
-    default:
-        int menu_color = glutCreateMenu(Menu);
-        glutAddMenuEntry("Компонента R", KeyR);
-        glutAddMenuEntry("Компонента G", KeyG);
-        glutAddMenuEntry("Компонента B", KeyB);
+   default:
+      int menu_color = glutCreateMenu(Menu);
+      glutAddMenuEntry("Компонента R", KeyR);
+      glutAddMenuEntry("Компонента G", KeyG);
+      glutAddMenuEntry("Компонента B", KeyB);
 
-        int menu_move = glutCreateMenu(Menu);
-        glutAddMenuEntry("Вверх", KeyW);
-        glutAddMenuEntry("Вниз", KeyS);
-        glutAddMenuEntry("Bлево", KeyA);
-        glutAddMenuEntry("Вправо", KeyD);
+      int menu_move = glutCreateMenu(Menu);
+      glutAddMenuEntry("Вверх", KeyW);
+      glutAddMenuEntry("Вниз", KeyS);
+      glutAddMenuEntry("Bлево", KeyA);
+      glutAddMenuEntry("Вправо", KeyD);
 
-        int menu_rotate = glutCreateMenu(Menu);
-        glutAddMenuEntry("Повернуть против часовой", KeyQ);
-        glutAddMenuEntry("Повернуть по часовой", KeyE);
+      int menu_rotate = glutCreateMenu(Menu);
+      glutAddMenuEntry("Повернуть против часовой", KeyQ);
+      glutAddMenuEntry("Повернуть по часовой", KeyE);
 
-        int menu_size = glutCreateMenu(Menu);
-        glutAddMenuEntry("Увеличить", KeyC);
-        glutAddMenuEntry("Уменьшить", KeyV);
+      int menu_size = glutCreateMenu(Menu);
+      glutAddMenuEntry("Увеличить", KeyC);
+      glutAddMenuEntry("Уменьшить", KeyV);
 
-        int menu_scale = glutCreateMenu(Menu);
-        glutAddMenuEntry("Расстянуть", KeyZ);
-        glutAddMenuEntry("Сжать", KeyX);
+      int menu_scale = glutCreateMenu(Menu);
+      glutAddMenuEntry("Расстянуть", KeyZ);
+      glutAddMenuEntry("Сжать", KeyX);
 
-        int menu_mirror = glutCreateMenu(Menu);
-        glutAddMenuEntry("Отразить по X", KeyK);
-        glutAddMenuEntry("Отразить по Y", KeyL);
+      int menu_mirror = glutCreateMenu(Menu);
+      glutAddMenuEntry("Отразить по X", KeyK);
+      glutAddMenuEntry("Отразить по Y", KeyL);
 
-        int menu_group = glutCreateMenu(Menu);
-        glutAddMenuEntry("Добавить группу", KeyPlus);
-        glutAddMenuEntry("Удалить группу", KeyMinus);
+      int menu_group = glutCreateMenu(Menu);
+      glutAddMenuEntry("Добавить группу", KeyPlus);
+      glutAddMenuEntry("Удалить группу", KeyMinus);
 
-        int menu_select = glutCreateMenu(Menu);
-        glutAddMenuEntry("Выбрать следующую вершину группы", KeyRight);
-        glutAddMenuEntry("Выбрать предыдущую вершину группы", KeyLeft);
-        glutAddMenuEntry("Выбрать следующую группу", KeyUp);
-        glutAddMenuEntry("Выбрать предыдущую группу", KeyDown);
+      int menu_select = glutCreateMenu(Menu);
+      glutAddMenuEntry("Выбрать следующую вершину группы", KeyRight);
+      glutAddMenuEntry("Выбрать предыдущую вершину группы", KeyLeft);
+      glutAddMenuEntry("Выбрать следующую группу", KeyUp);
+      glutAddMenuEntry("Выбрать предыдущую группу", KeyDown);
 
-        int menu_misc = glutCreateMenu(Menu);
-        glutAddMenuEntry("Выбрать центр", KeyF);
-        glutAddMenuEntry("Переключение режима отрисовки", KeyT);
-        glutAddMenuEntry("Переключение режима сглаживания", KeyH);
-        glutAddMenuEntry("Пересчитать центр", KeySpace);
+      int menu_misc = glutCreateMenu(Menu);
+      glutAddMenuEntry("Выбрать центр", KeyF);
+      glutAddMenuEntry("Переключение режима отрисовки", KeyT);
+      glutAddMenuEntry("Переключение режима сглаживания", KeyH);
+      glutAddMenuEntry("Пересчитать центр", KeySpace);
 
-        int menu = glutCreateMenu(Menu);
-        glutAddSubMenu("Смена цвета", menu_color);
-        glutAddSubMenu("Перемещение", menu_move);
-        glutAddSubMenu("Вращение", menu_rotate);
-        glutAddSubMenu("Изменение размера точки", menu_size);
-        glutAddSubMenu("Масштабирование", menu_scale);
-        glutAddSubMenu("Отражение", menu_mirror);
-        glutAddSubMenu("Управление группами", menu_group);
-        glutAddSubMenu("Переключение между точками и группами", menu_select);
-        glutAddSubMenu("Дополнительно", menu_misc);
+      int menu = glutCreateMenu(Menu);
+      glutAddSubMenu("Смена цвета", menu_color);
+      glutAddSubMenu("Перемещение", menu_move);
+      glutAddSubMenu("Вращение", menu_rotate);
+      glutAddSubMenu("Изменение размера точки", menu_size);
+      glutAddSubMenu("Масштабирование", menu_scale);
+      glutAddSubMenu("Отражение", menu_mirror);
+      glutAddSubMenu("Управление группами", menu_group);
+      glutAddSubMenu("Переключение между точками и группами", menu_select);
+      glutAddSubMenu("Дополнительно", menu_misc);
 
-        glutAttachMenu(GLUT_RIGHT_BUTTON);
-        KeyboardLetters(Empty, 0, 0);
-    }
+      glutAttachMenu(GLUT_RIGHT_BUTTON);
+      KeyboardLetters(Empty, 0, 0);
+   }
 }
 
 int main(int argc, char** argv)
